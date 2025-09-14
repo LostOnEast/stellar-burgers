@@ -3,9 +3,10 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import * as burgerApi from '@api';
 import { TIngredient, TOrder, TConstructorIngredient } from '@utils-types';
 
+// состояние конструктора
 interface ConstructorState {
   bun: TConstructorIngredient | null;
-  items: TConstructorIngredient[]; // добавляемые (каждый с уникальным id)
+  items: TConstructorIngredient[];
 }
 
 interface BurgerState {
@@ -14,7 +15,6 @@ interface BurgerState {
   loading: boolean;
   error: string | null;
 
-  // constructor + order state
   constructor: ConstructorState;
   orderRequest: boolean;
   orderModalData: TOrder | null;
@@ -33,7 +33,7 @@ const initialState: BurgerState = {
   orderModalData: null
 };
 
-// Thunk для загрузки ингредиентов (твой уже существующий)
+// Загрузка ингредиентов
 export const fetchIngredients = createAsyncThunk(
   'burger/fetchIngredients',
   async (_, { rejectWithValue }) => {
@@ -46,7 +46,20 @@ export const fetchIngredients = createAsyncThunk(
   }
 );
 
-// Thunk для отправки заказа
+// Загрузка ленты заказов
+export const fetchFeeds = createAsyncThunk(
+  'burger/fetchFeeds',
+  async (_, { rejectWithValue }) => {
+    try {
+      const data = await burgerApi.getFeedsApi();
+      return data.orders;
+    } catch (err: any) {
+      return rejectWithValue(err.message || 'Ошибка загрузки заказов');
+    }
+  }
+);
+
+// Создание заказа
 export const createOrder = createAsyncThunk<
   TOrder,
   void,
@@ -59,8 +72,6 @@ export const createOrder = createAsyncThunk<
       return rejectWithValue('Булка не выбрана');
     }
 
-    // Обычно API ожидает список id: булка + начинки.
-    // Часто булку добавляют 2 раза (верх+низ). Если ваш API ожидает иначе — поменяйте.
     const ingredientIds: string[] = [
       constructor.bun._id,
       ...constructor.items.map((i) => i._id),
@@ -68,7 +79,6 @@ export const createOrder = createAsyncThunk<
     ];
 
     const data = await burgerApi.orderBurgerApi(ingredientIds);
-    // orderBurgerApi возвращает обёртку с .order
     if (data && data.order) {
       return data.order;
     }
@@ -82,7 +92,6 @@ export const burgerSlice = createSlice({
   name: 'burger',
   initialState,
   reducers: {
-    // Управление конструктором
     setBun(state, action: PayloadAction<TConstructorIngredient | null>) {
       state.constructor.bun = action.payload;
     },
@@ -100,15 +109,13 @@ export const burgerSlice = createSlice({
     clearConstructor(state) {
       state.constructor = { bun: null, items: [] };
     },
-
-    // закрыть модалку
     closeOrderModal(state) {
       state.orderModalData = null;
     }
   },
   extraReducers: (builder) => {
     builder
-      // ингредиенты
+      // fetchIngredients
       .addCase(fetchIngredients.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -128,6 +135,23 @@ export const burgerSlice = createSlice({
         }
       )
 
+      // fetchFeeds
+      .addCase(fetchFeeds.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchFeeds.fulfilled,
+        (state, action: PayloadAction<TOrder[]>) => {
+          state.orders = action.payload;
+          state.loading = false;
+        }
+      )
+      .addCase(fetchFeeds.rejected, (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
       // createOrder
       .addCase(createOrder.pending, (state) => {
         state.orderRequest = true;
@@ -139,7 +163,6 @@ export const burgerSlice = createSlice({
           state.orderRequest = false;
           state.orderModalData = action.payload;
           state.orders.push(action.payload);
-          // очистим конструктор после успешного заказа
           state.constructor = { bun: null, items: [] };
         }
       )

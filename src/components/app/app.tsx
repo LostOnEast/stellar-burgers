@@ -1,6 +1,13 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useLocation
+} from 'react-router-dom';
 import '../../index.css';
 import styles from './app.module.css';
+import { getCookie, setCookie } from '../../utils/cookie';
 
 import { AppHeader, OrderInfo, IngredientDetails, Modal } from '@components';
 import {
@@ -16,8 +23,20 @@ import {
 } from '@pages';
 
 const ProtectedRoute = ({ element }: { element: JSX.Element }) => {
-  const isAuth = false; // здесь должна быть логика проверки авторизации
-  return isAuth ? element : <Login />;
+  const isAuth = Boolean(localStorage.getItem('accessToken'));
+  if (isAuth) {
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+      setCookie('accessToken', accessToken);
+    }
+  }
+  const location = useLocation();
+
+  if (!isAuth) {
+    return <Navigate to='/login' state={{ from: location }} replace />;
+  }
+
+  return element;
 };
 
 const App = () => (
@@ -25,24 +44,17 @@ const App = () => (
     <div className={styles.app}>
       <AppHeader />
       <Routes>
-        {/* обычные роуты */}
+        {/* публичные роуты */}
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
 
+        {/* роуты авторизации */}
+        <Route path='/login' element={<Login />} />
+        <Route path='/register' element={<Register />} />
+        <Route path='/forgot-password' element={<ForgotPassword />} />
+        <Route path='/reset-password' element={<ResetPassword />} />
+
         {/* защищённые роуты */}
-        <Route path='/login' element={<ProtectedRoute element={<Login />} />} />
-        <Route
-          path='/register'
-          element={<ProtectedRoute element={<Register />} />}
-        />
-        <Route
-          path='/forgot-password'
-          element={<ProtectedRoute element={<ForgotPassword />} />}
-        />
-        <Route
-          path='/reset-password'
-          element={<ProtectedRoute element={<ResetPassword />} />}
-        />
         <Route
           path='/profile'
           element={<ProtectedRoute element={<Profile />} />}

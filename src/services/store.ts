@@ -5,12 +5,13 @@ import {
   useDispatch as dispatchHook,
   useSelector as selectorHook
 } from 'react-redux';
-import burgerReducer from './slices/burgerSlice'; // твой слайс
+import burgerReducer from './slices/burgerSlice';
+import authReducer from './slices/authSlice';
 
 // объединяем все редьюсеры
 const rootReducer = combineReducers({
-  burger: burgerReducer
-  // сюда можно добавить другие слайсы
+  burger: burgerReducer,
+  auth: authReducer
 });
 
 export const store = configureStore({

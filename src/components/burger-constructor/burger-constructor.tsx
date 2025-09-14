@@ -1,5 +1,6 @@
 // components/BurgerConstructor.tsx
 import React, { FC, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from '../../services/store';
 import { BurgerConstructorUI } from '@ui';
 import {
@@ -13,7 +14,8 @@ export const BurgerConstructor: FC = () => {
   const { constructor, orderRequest, orderModalData } = useSelector(
     (s) => s.burger
   );
-
+  const navigate = useNavigate();
+  const isAuth = Boolean(localStorage.getItem('accessToken'));
   const constructorItems = {
     bun: constructor.bun,
     ingredients: constructor.items
@@ -30,6 +32,10 @@ export const BurgerConstructor: FC = () => {
   );
 
   const onOrderClick = () => {
+    if (!isAuth) {
+      navigate('/login');
+      return;
+    }
     if (!constructorItems.bun || orderRequest) return;
     // диспатчим thunk — createOrder возьмёт данные из state.burger.constructor
     dispatch(createOrder());

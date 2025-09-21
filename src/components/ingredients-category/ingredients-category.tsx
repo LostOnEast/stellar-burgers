@@ -1,4 +1,5 @@
 import { forwardRef, useMemo } from 'react';
+import { useSelector, RootState } from '../../services/store';
 import { TIngredientsCategoryProps } from './type';
 import { TIngredient } from '@utils-types';
 import { IngredientsCategoryUI } from '../ui/ingredients-category';
@@ -7,22 +8,21 @@ export const IngredientsCategory = forwardRef<
   HTMLUListElement,
   TIngredientsCategoryProps
 >(({ title, titleRef, ingredients }, ref) => {
-  /** TODO: взять переменную из стора */
-  const burgerConstructor = {
-    bun: {
-      _id: ''
-    },
-    ingredients: []
-  };
+  // Берём текущие ингредиенты конструктора из стора
+  const burgerConstructor = useSelector(
+    (state: RootState) => state.burger.constructor
+  );
 
   const ingredientsCounters = useMemo(() => {
-    const { bun, ingredients } = burgerConstructor;
+    const { bun, items } = burgerConstructor;
     const counters: { [key: string]: number } = {};
-    ingredients.forEach((ingredient: TIngredient) => {
+
+    items.forEach((ingredient: TIngredient) => {
       if (!counters[ingredient._id]) counters[ingredient._id] = 0;
       counters[ingredient._id]++;
     });
-    if (bun) counters[bun._id] = 2;
+
+    if (bun) counters[bun._id] = 2; // булка считается дважды
     return counters;
   }, [burgerConstructor]);
 
@@ -36,3 +36,5 @@ export const IngredientsCategory = forwardRef<
     />
   );
 });
+
+IngredientsCategory.displayName = 'IngredientsCategory';

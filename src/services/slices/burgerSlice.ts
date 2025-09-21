@@ -12,6 +12,7 @@ interface ConstructorState {
 interface BurgerState {
   ingredients: TIngredient[];
   orders: TOrder[];
+  userOrders: TOrder[];
   loading: boolean;
   error: string | null;
 
@@ -23,6 +24,7 @@ interface BurgerState {
 const initialState: BurgerState = {
   ingredients: [],
   orders: [],
+  userOrders: [],
   loading: false,
   error: null,
   constructor: {
@@ -58,7 +60,18 @@ export const fetchFeeds = createAsyncThunk(
     }
   }
 );
-
+// Загрузка ленты заказов пользователя
+export const fetchOrders = createAsyncThunk(
+  'burger/fetchOrders',
+  async (_, { rejectWithValue }) => {
+    try {
+      const data = await burgerApi.getOrdersApi();
+      return data;
+    } catch (err: any) {
+      return rejectWithValue(err.message || 'Ошибка загрузки заказов');
+    }
+  }
+);
 // Создание заказа
 export const createOrder = createAsyncThunk<
   TOrder,
@@ -137,6 +150,21 @@ export const burgerSlice = createSlice({
 
       // fetchFeeds
       .addCase(fetchFeeds.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchOrders.fulfilled,
+        (state, action: PayloadAction<TOrder[]>) => {
+          state.userOrders = action.payload;
+          state.loading = false;
+        }
+      )
+      .addCase(fetchOrders.rejected, (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchOrders.pending, (state) => {
         state.loading = true;
         state.error = null;
       })

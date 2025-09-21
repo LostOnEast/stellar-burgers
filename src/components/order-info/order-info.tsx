@@ -1,23 +1,53 @@
-import { FC, useMemo } from 'react';
+import { FC, useEffect, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useDispatch, useSelector, RootState } from '../../services/store';
+import {
+  fetchFeeds,
+  fetchOrders,
+  fetchIngredients
+} from '../../services/slices/burgerSlice';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
-import { TIngredient } from '@utils-types';
+import { TIngredient, TOrder } from '@utils-types';
 
 export const OrderInfo: FC = () => {
-  /** TODO: взять переменные orderData и ingredients из стора */
-  const orderData = {
-    createdAt: '',
-    ingredients: [],
-    _id: '',
-    status: '',
-    name: '',
-    updatedAt: 'string',
-    number: 0
-  };
+  const location = useLocation();
+  const dispatch = useDispatch();
 
-  const ingredients: TIngredient[] = [];
+  const isFeedPage = location.pathname.startsWith('/feed');
+  const isProfileOrdersPage = location.pathname.startsWith('/profile/orders');
 
-  /* Готовим данные для отображения */
+  const { orders, userOrders, ingredients, loading } = useSelector(
+    (state: RootState) => state.burger
+  );
+
+  // Подгружаем заказы и ингредиенты
+  useEffect(() => {
+    if (isFeedPage && !orders.length) {
+      dispatch(fetchFeeds());
+    }
+    if (isProfileOrdersPage && !userOrders.length) {
+      dispatch(fetchOrders());
+    }
+    if (!ingredients.length) {
+      dispatch(fetchIngredients());
+    }
+  }, [dispatch, isFeedPage, isProfileOrdersPage, orders.length, userOrders.length, ingredients.length]);
+
+  // Получаем orderId из URL
+  const orderId = useMemo(() => {
+    const match = location.pathname.match(/\/(?:feed|profile\/orders)\/([^/]+)/);
+    return match ? Number(match[1]) : null;
+  }, [location.pathname]);
+
+  // Выбираем источник заказов в зависимости от страницы
+  const orderData: TOrder | undefined = useMemo(() => {
+    const source = isFeedPage ? orders : userOrders;
+    if (!source.length || !orderId) return undefined;
+    return source.find((order) => order.number === orderId);
+  }, [isFeedPage, orders, userOrders, orderId]);
+
+  // Формируем данные для UI
   const orderInfo = useMemo(() => {
     if (!orderData || !ingredients.length) return null;
 
@@ -31,16 +61,10 @@ export const OrderInfo: FC = () => {
       (acc: TIngredientsWithCount, item) => {
         if (!acc[item]) {
           const ingredient = ingredients.find((ing) => ing._id === item);
-          if (ingredient) {
-            acc[item] = {
-              ...ingredient,
-              count: 1
-            };
-          }
+          if (ingredient) acc[item] = { ...ingredient, count: 1 };
         } else {
           acc[item].count++;
         }
-
         return acc;
       },
       {}
@@ -51,17 +75,10 @@ export const OrderInfo: FC = () => {
       0
     );
 
-    return {
-      ...orderData,
-      ingredientsInfo,
-      date,
-      total
-    };
+    return { ...orderData, ingredientsInfo, date, total };
   }, [orderData, ingredients]);
 
-  if (!orderInfo) {
-    return <Preloader />;
-  }
+  if (loading || !orderInfo) return <Preloader />;
 
   return <OrderInfoUI orderInfo={orderInfo} />;
 };

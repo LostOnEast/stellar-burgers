@@ -32,11 +32,20 @@ export const OrderInfo: FC = () => {
     if (!ingredients.length) {
       dispatch(fetchIngredients());
     }
-  }, [dispatch, isFeedPage, isProfileOrdersPage, orders.length, userOrders.length, ingredients.length]);
+  }, [
+    dispatch,
+    isFeedPage,
+    isProfileOrdersPage,
+    orders.length,
+    userOrders.length,
+    ingredients.length
+  ]);
 
   // Получаем orderId из URL
   const orderId = useMemo(() => {
-    const match = location.pathname.match(/\/(?:feed|profile\/orders)\/([^/]+)/);
+    const match = location.pathname.match(
+      /\/(?:feed|profile\/orders)\/([^/]+)/
+    );
     return match ? Number(match[1]) : null;
   }, [location.pathname]);
 

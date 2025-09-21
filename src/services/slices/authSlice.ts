@@ -95,7 +95,6 @@ export const getUser = createAsyncThunk<TUser, void, { rejectValue: string }>(
   'auth/getUser',
   async (_, { rejectWithValue }) => {
     try {
-      console.log('auth/getUser');
       const res = await getUserApi();
       if (res.success && res.user) return res.user;
       return rejectWithValue('Не удалось получить данные пользователя');

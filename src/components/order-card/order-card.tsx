@@ -16,9 +16,6 @@ export const OrderCard: FC<OrderCardProps> = memo(({ order }) => {
   );
 
   const orderInfo = useMemo(() => {
-    //if (!ingredients.length) return null;
-    console.log('Берем все ингредиенты из стора');
-    console.log(ingredients);
     const ingredientsInfo = order.ingredients.reduce(
       (acc: TIngredient[], item: string) => {
         const ingredient = ingredients.find((ing) => ing._id === item);

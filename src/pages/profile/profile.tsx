@@ -21,7 +21,6 @@ export const Profile: FC = () => {
   // 1. Проверка токена
   useEffect(() => {
     if (!accessToken) {
-      console.log('1. Проверка токена');
       navigate('/login', { replace: true });
     }
   }, [accessToken, navigate]);
@@ -43,7 +42,6 @@ export const Profile: FC = () => {
 
   // 3. Заполняем форму, когда user обновился
   useEffect(() => {
-    console.log('3. Заполняем форму, когда user обновился');
     if (user) {
       setFormValue({ name: user.name, email: user.email, password: '' });
     }
@@ -63,7 +61,6 @@ export const Profile: FC = () => {
         email: formValue.email,
         ...(formValue.password ? { password: formValue.password } : {})
       };
-      console.log('Обновляем данные');
       const result = await dispatch(updateUser(updatedUserData));
 
       if (updateUser.fulfilled.match(result)) {

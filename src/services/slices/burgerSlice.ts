@@ -105,6 +105,15 @@ export const burgerSlice = createSlice({
   name: 'burger',
   initialState,
   reducers: {
+    moveConstructorIngredient(
+      state,
+      action: PayloadAction<{ fromIndex: number; toIndex: number }>
+    ) {
+      const { fromIndex, toIndex } = action.payload;
+      const [movedItem] = state.constructor.items.splice(fromIndex, 1);
+      state.constructor.items.splice(toIndex, 0, movedItem);
+    },
+
     setBun(state, action: PayloadAction<TConstructorIngredient | null>) {
       state.constructor.bun = action.payload;
     },
@@ -204,6 +213,7 @@ export const burgerSlice = createSlice({
 export const {
   setBun,
   addConstructorIngredient,
+  moveConstructorIngredient,
   removeConstructorIngredient,
   clearConstructor,
   closeOrderModal

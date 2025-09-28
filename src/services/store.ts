@@ -7,10 +7,12 @@ import {
 } from 'react-redux';
 import burgerReducer from './slices/burgerSlice';
 import authReducer from './slices/authSlice';
+import ingredientsReducer from './slices/ingredientsSlice';
 
 // объединяем все редьюсеры
 const rootReducer = combineReducers({
   burger: burgerReducer,
+  ingredients: ingredientsReducer,
   auth: authReducer
 });
 

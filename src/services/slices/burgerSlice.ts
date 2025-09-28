@@ -1,7 +1,7 @@
-// store/slices/burgerSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import * as burgerApi from '@api';
 import { TIngredient, TOrder, TConstructorIngredient } from '@utils-types';
+import { v4 as uuidv4 } from 'uuid';
 
 // состояние конструктора
 interface ConstructorState {
@@ -10,7 +10,6 @@ interface ConstructorState {
 }
 
 interface BurgerState {
-  ingredients: TIngredient[];
   orders: TOrder[];
   userOrders: TOrder[];
   loading: boolean;
@@ -22,7 +21,6 @@ interface BurgerState {
 }
 
 const initialState: BurgerState = {
-  ingredients: [],
   orders: [],
   userOrders: [],
   loading: false,
@@ -35,20 +33,7 @@ const initialState: BurgerState = {
   orderModalData: null
 };
 
-// Загрузка ингредиентов
-export const fetchIngredients = createAsyncThunk(
-  'burger/fetchIngredients',
-  async (_, { rejectWithValue }) => {
-    try {
-      const data = await burgerApi.getIngredientsApi();
-      return data;
-    } catch (err: any) {
-      return rejectWithValue(err.message || 'Ошибка загрузки ингредиентов');
-    }
-  }
-);
-
-// Загрузка ленты заказов
+// Лента заказов
 export const fetchFeeds = createAsyncThunk(
   'burger/fetchFeeds',
   async (_, { rejectWithValue }) => {
@@ -60,7 +45,8 @@ export const fetchFeeds = createAsyncThunk(
     }
   }
 );
-// Загрузка ленты заказов пользователя
+
+// Заказы пользователя
 export const fetchOrders = createAsyncThunk(
   'burger/fetchOrders',
   async (_, { rejectWithValue }) => {
@@ -72,6 +58,7 @@ export const fetchOrders = createAsyncThunk(
     }
   }
 );
+
 // Создание заказа
 export const createOrder = createAsyncThunk<
   TOrder,
@@ -114,14 +101,16 @@ export const burgerSlice = createSlice({
       state.constructor.items.splice(toIndex, 0, movedItem);
     },
 
-    setBun(state, action: PayloadAction<TConstructorIngredient | null>) {
-      state.constructor.bun = action.payload;
+    setBun(state, action: PayloadAction<TIngredient | null>) {
+      state.constructor.bun = action.payload
+        ? { ...action.payload, id: uuidv4() }
+        : null;
     },
-    addConstructorIngredient(
-      state,
-      action: PayloadAction<TConstructorIngredient>
-    ) {
-      state.constructor.items.push(action.payload);
+    addConstructorIngredient(state, action: PayloadAction<TIngredient>) {
+      state.constructor.items.push({
+        ...action.payload,
+        id: uuidv4()
+      });
     },
     removeConstructorIngredient(state, action: PayloadAction<string>) {
       state.constructor.items = state.constructor.items.filter(
@@ -137,53 +126,29 @@ export const burgerSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // fetchIngredients
-      .addCase(fetchIngredients.pending, (state) => {
+      // fetchOrders
+      .addCase(fetchOrders.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(
-        fetchIngredients.fulfilled,
-        (state, action: PayloadAction<TIngredient[]>) => {
-          state.ingredients = action.payload;
-          state.loading = false;
-        }
-      )
-      .addCase(
-        fetchIngredients.rejected,
-        (state, action: PayloadAction<any>) => {
-          state.loading = false;
-          state.error = action.payload;
-        }
-      )
+      .addCase(fetchOrders.fulfilled, (state, action: PayloadAction<TOrder[]>) => {
+        state.userOrders = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchOrders.rejected, (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
 
       // fetchFeeds
       .addCase(fetchFeeds.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(
-        fetchOrders.fulfilled,
-        (state, action: PayloadAction<TOrder[]>) => {
-          state.userOrders = action.payload;
-          state.loading = false;
-        }
-      )
-      .addCase(fetchOrders.rejected, (state, action: PayloadAction<any>) => {
+      .addCase(fetchFeeds.fulfilled, (state, action: PayloadAction<TOrder[]>) => {
+        state.orders = action.payload;
         state.loading = false;
-        state.error = action.payload;
       })
-      .addCase(fetchOrders.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(
-        fetchFeeds.fulfilled,
-        (state, action: PayloadAction<TOrder[]>) => {
-          state.orders = action.payload;
-          state.loading = false;
-        }
-      )
       .addCase(fetchFeeds.rejected, (state, action: PayloadAction<any>) => {
         state.loading = false;
         state.error = action.payload;
@@ -194,15 +159,12 @@ export const burgerSlice = createSlice({
         state.orderRequest = true;
         state.error = null;
       })
-      .addCase(
-        createOrder.fulfilled,
-        (state, action: PayloadAction<TOrder>) => {
-          state.orderRequest = false;
-          state.orderModalData = action.payload;
-          state.orders.push(action.payload);
-          state.constructor = { bun: null, items: [] };
-        }
-      )
+      .addCase(createOrder.fulfilled, (state, action: PayloadAction<TOrder>) => {
+        state.orderRequest = false;
+        state.orderModalData = action.payload;
+        state.orders.push(action.payload);
+        state.constructor = { bun: null, items: [] };
+      })
       .addCase(createOrder.rejected, (state, action: PayloadAction<any>) => {
         state.orderRequest = false;
         state.error = action.payload;

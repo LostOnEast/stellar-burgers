@@ -1,11 +1,10 @@
 import { FC, useEffect } from 'react';
 import { useDispatch, useSelector } from '../../services/store';
 import {
-  fetchFeeds
-} from '../../services/slices/burgerSlice';
-import {  
+  fetchFeeds,
   fetchIngredients
-} from '../../services/slices/ingredientsSlice';
+} from '../../services/slices/burgerSlice';
+
 import { RootState } from '../../services/store';
 import { TOrder } from '@utils-types';
 import { FeedInfoUI } from '../ui/feed-info';

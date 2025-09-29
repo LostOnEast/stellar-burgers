@@ -7,7 +7,7 @@ import { TBurgerIngredientProps } from './type';
 import {
   setBun,
   addConstructorIngredient
-} from '../../services/slices/constructorSlice';
+} from '../../services/slices/constructorBurgerSlice';
 import { TConstructorIngredient } from '@utils-types';
 
 export const BurgerIngredient: FC<TBurgerIngredientProps> = memo(

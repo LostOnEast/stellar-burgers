@@ -41,13 +41,13 @@ const ProtectedRoute = ({ element }: { element: JSX.Element }) => {
 
 const App = () => {
   const location = useLocation();
-  const state = location.state as { backgroundLocation?: Location };
+  const state = location.state as { background?: Location };
 
   return (
     <div className={styles.app}>
       <AppHeader />
 
-      <Routes location={state?.backgroundLocation || location}>
+      <Routes location={state?.background || location}>
         {/* публичные роуты */}
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
@@ -81,7 +81,7 @@ const App = () => {
       </Routes>
 
       {/* Модалки поверх */}
-      {state?.backgroundLocation && (
+      {state?.background && (
         <Routes>
           <Route
             path='/feed/:number'

@@ -8,7 +8,7 @@ import {
 //import burgerReducer from './slices/burgerSlice';
 import authReducer from './slices/authSlice';
 //import constructorReducer from './slices/constructorSlice';
-import _constructorReducer from './slices/_constructorSlice';
+import _constructorReducer from './slices/constructorBurgerSlice';
 import ingredientsReducer from './slices/ingredientsSlice';
 import ordersReducer from './slices/ordersSlice';
 

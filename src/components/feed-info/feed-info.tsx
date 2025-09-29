@@ -1,9 +1,7 @@
 import { FC, useEffect } from 'react';
 import { useDispatch, useSelector } from '../../services/store';
-import {
-  fetchFeeds,
-  fetchIngredients
-} from '../../services/slices/burgerSlice';
+import { fetchIngredients } from '../../services/slices/ingredientsSlice';
+import { fetchFeeds } from '../../services/slices/ordersSlice';
 
 import { RootState } from '../../services/store';
 import { TOrder } from '@utils-types';
@@ -17,7 +15,7 @@ const getOrders = (orders: TOrder[], status: string): number[] =>
 
 export const FeedInfo: FC = () => {
   const dispatch = useDispatch();
-  const { orders } = useSelector((state: RootState) => state.burger);
+  const { orders } = useSelector((state: RootState) => state.orders);
 
   // Загружаем заказы при монтировании, если их нет
   useEffect(() => {

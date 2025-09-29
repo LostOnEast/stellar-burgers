@@ -1,13 +1,15 @@
 // src/components/BurgerIngredients.tsx
 import { useEffect, useState, useRef } from 'react';
 import { useInView } from 'react-intersection-observer';
-import { useDispatch, useSelector } from '../../services/store';
-import { fetchIngredients } from '../../services/slices/burgerSlice';
+import { RootState, useDispatch, useSelector } from '../../services/store';
+import { fetchIngredients } from '../../services/slices/ingredientsSlice';
 import { TIngredient, TTabMode } from '@utils-types';
 import { BurgerIngredientsUI } from '.././ui/burger-ingredients';
 export const BurgerIngredients = () => {
   const dispatch = useDispatch();
-  const { ingredients, loading } = useSelector((state) => state.burger);
+  const { ingredients, loading } = useSelector(
+    (state: RootState) => state.ingredients
+  );
 
   useEffect(() => {
     dispatch(fetchIngredients());

@@ -2,17 +2,14 @@ import { FC, useEffect, memo } from 'react';
 import { OrdersListProps } from './type';
 import { OrdersListUI } from '@ui';
 import { useDispatch, useSelector, RootState } from '../../services/store';
-import {
-  fetchFeeds,
-  fetchOrders,
-  fetchIngredients
-} from '../../services/slices/burgerSlice';
+import { fetchIngredients } from '../../services/slices/ingredientsSlice';
+import { fetchFeeds, fetchOrders } from '../../services/slices/ordersSlice';
 
 export const OrdersList: FC<OrdersListProps> = memo(({ orders }) => {
   const dispatch = useDispatch();
 
   const { ingredients, loading } = useSelector(
-    (state: RootState) => state.burger
+    (state: RootState) => state.ingredients
   );
   // Подгружаем ингредиенты для подсветки заказов
   useEffect(() => {

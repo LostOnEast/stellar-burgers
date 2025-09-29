@@ -10,13 +10,14 @@ export const IngredientsCategory = forwardRef<
 >(({ title, titleRef, ingredients }, ref) => {
   // Берём текущие ингредиенты конструктора из стора
   const burgerConstructor = useSelector(
-    (state: RootState) => state.burger.constructor
+    (state: RootState) => state._constructor
   );
 
   const ingredientsCounters = useMemo(() => {
     const { bun, items } = burgerConstructor;
     const counters: { [key: string]: number } = {};
-
+    console.log('Проверка данных из стора');
+    console.log(items);
     items.forEach((ingredient: TIngredient) => {
       if (!counters[ingredient._id]) counters[ingredient._id] = 0;
       counters[ingredient._id]++;

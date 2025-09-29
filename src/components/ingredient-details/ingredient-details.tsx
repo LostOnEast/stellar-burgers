@@ -1,7 +1,7 @@
 import { FC, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from '../../services/store';
-import { fetchIngredients } from '../../services/slices/burgerSlice';
+import { fetchIngredients } from '../../services/slices/ingredientsSlice';
 import { RootState } from '../../services/store';
 import { Preloader } from '../ui/preloader';
 import { IngredientDetailsUI } from '../ui/ingredient-details';
@@ -11,7 +11,7 @@ export const IngredientDetails: FC = () => {
   const dispatch = useDispatch();
 
   const { ingredients, loading } = useSelector(
-    (state: RootState) => state.burger
+    (state: RootState) => state.ingredients
   );
 
   useEffect(() => {

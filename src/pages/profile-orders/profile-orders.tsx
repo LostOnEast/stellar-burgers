@@ -1,14 +1,12 @@
 import { FC, useEffect } from 'react';
 import { useDispatch, useSelector, RootState } from '../../services/store';
-import { fetchOrders } from '../../services/slices/burgerSlice';
+import { fetchOrders } from '../../services/slices/ordersSlice';
 import { ProfileOrdersUI } from '@ui-pages';
 import { Preloader } from '@ui';
 
 export const ProfileOrders: FC = () => {
   const dispatch = useDispatch();
-  const { userOrders, loading } = useSelector(
-    (state: RootState) => state.burger
-  );
+  const { userOrders, loading } = useSelector((state) => state.orders);
 
   useEffect(() => {
     if (!userOrders.length) {

@@ -1,11 +1,8 @@
 import { FC, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector, RootState } from '../../services/store';
-import {
-  fetchFeeds,
-  fetchOrders,
-  fetchIngredients
-} from '../../services/slices/burgerSlice';
+import { fetchIngredients } from '../../services/slices/ingredientsSlice';
+import { fetchFeeds, fetchOrders } from '../../services/slices/ordersSlice';
 import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
 import { TIngredient, TOrder } from '@utils-types';
@@ -17,8 +14,11 @@ export const OrderInfo: FC = () => {
   const isFeedPage = location.pathname.startsWith('/feed');
   const isProfileOrdersPage = location.pathname.startsWith('/profile/orders');
 
-  const { orders, userOrders, ingredients, loading } = useSelector(
-    (state: RootState) => state.burger
+  const { ingredients, loading } = useSelector(
+    (state: RootState) => state.ingredients
+  );
+  const { orders, userOrders } = useSelector(
+    (state: RootState) => state.orders
   );
 
   // Подгружаем заказы и ингредиенты

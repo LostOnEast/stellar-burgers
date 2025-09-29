@@ -1,24 +1,24 @@
 // components/BurgerConstructor.tsx
 import React, { FC, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from '../../services/store';
+import { RootState, useDispatch, useSelector } from '../../services/store';
 import { BurgerConstructorUI } from '@ui';
 import {
   createOrder,
   closeOrderModal
-} from '../../services/slices/burgerSlice';
+} from '../../services/slices/ordersSlice';
 import { TConstructorIngredient, TOrder } from '@utils-types';
 
 export const BurgerConstructor: FC = () => {
   const dispatch = useDispatch();
-  const { constructor, orderRequest, orderModalData } = useSelector(
-    (s) => s.burger
-  );
+  const { orderRequest, orderModalData } = useSelector((s) => s.orders);
+  const constructor = useSelector((s: RootState) => s._constructor);
+
   const navigate = useNavigate();
   const isAuth = Boolean(localStorage.getItem('accessToken'));
   const constructorItems = {
     bun: constructor.bun,
-    ingredients: constructor.items
+    ingredients: constructor.items || []
   };
 
   const price = useMemo(

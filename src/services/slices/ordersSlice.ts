@@ -57,7 +57,7 @@ export const createOrder = createAsyncThunk<
 >('orders/createOrder', async (_, { getState, rejectWithValue }) => {
   try {
     const state = getState();
-    const constructor = state._constructor;
+    const constructor = state.constructorBurger;
 
     if (!constructor.bun) {
       return rejectWithValue('Булка не выбрана');

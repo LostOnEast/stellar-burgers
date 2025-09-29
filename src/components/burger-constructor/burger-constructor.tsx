@@ -12,7 +12,7 @@ import { TConstructorIngredient, TOrder } from '@utils-types';
 export const BurgerConstructor: FC = () => {
   const dispatch = useDispatch();
   const { orderRequest, orderModalData } = useSelector((s) => s.orders);
-  const constructor = useSelector((s: RootState) => s._constructor);
+  const constructor = useSelector((s: RootState) => s.constructorBurger);
 
   const navigate = useNavigate();
   const isAuth = Boolean(localStorage.getItem('accessToken'));

@@ -8,7 +8,7 @@ import {
 //import burgerReducer from './slices/burgerSlice';
 import authReducer from './slices/authSlice';
 //import constructorReducer from './slices/constructorSlice';
-import _constructorReducer from './slices/constructorBurgerSlice';
+import constructorBurgerReducer from './slices/constructorBurgerSlice';
 import ingredientsReducer from './slices/ingredientsSlice';
 import ordersReducer from './slices/ordersSlice';
 
@@ -19,7 +19,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
   ingredients: ingredientsReducer,
   //constructor: constructorReducer,
-  _constructor: _constructorReducer
+  constructorBurger: constructorBurgerReducer
 });
 
 export const store = configureStore({

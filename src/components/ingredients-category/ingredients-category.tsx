@@ -10,7 +10,7 @@ export const IngredientsCategory = forwardRef<
 >(({ title, titleRef, ingredients }, ref) => {
   // Берём текущие ингредиенты конструктора из стора
   const burgerConstructor = useSelector(
-    (state: RootState) => state._constructor
+    (state: RootState) => state.constructorBurger
   );
 
   const ingredientsCounters = useMemo(() => {

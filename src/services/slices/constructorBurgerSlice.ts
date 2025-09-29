@@ -12,7 +12,7 @@ const initialState: ConstructorState = {
   items: []
 };
 
-const _constructorSlice = createSlice({
+const constructorBurgerSlice = createSlice({
   name: 'constructor',
   initialState,
   reducers: {
@@ -53,5 +53,5 @@ export const {
   removeConstructorIngredient,
   moveConstructorIngredient,
   clearConstructor
-} = _constructorSlice.actions;
-export default _constructorSlice.reducer;
+} = constructorBurgerSlice.actions;
+export default constructorBurgerSlice.reducer;

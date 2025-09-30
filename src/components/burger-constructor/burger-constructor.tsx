@@ -1,24 +1,25 @@
-import { FC, useMemo } from 'react';
-import { TConstructorIngredient } from '@utils-types';
+// components/BurgerConstructor.tsx
+import React, { FC, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { RootState, useDispatch, useSelector } from '../../services/store';
 import { BurgerConstructorUI } from '@ui';
+import {
+  createOrder,
+  closeOrderModal
+} from '../../services/slices/ordersSlice';
+import { TConstructorIngredient, TOrder } from '@utils-types';
 
 export const BurgerConstructor: FC = () => {
-  /** TODO: взять переменные constructorItems, orderRequest и orderModalData из стора */
+  const dispatch = useDispatch();
+  const { orderRequest, orderModalData } = useSelector((s) => s.orders);
+  const constructor = useSelector((s: RootState) => s.constructorBurger);
+
+  const navigate = useNavigate();
+  const isAuth = Boolean(localStorage.getItem('accessToken'));
   const constructorItems = {
-    bun: {
-      price: 0
-    },
-    ingredients: []
+    bun: constructor.bun,
+    ingredients: constructor.items || []
   };
-
-  const orderRequest = false;
-
-  const orderModalData = null;
-
-  const onOrderClick = () => {
-    if (!constructorItems.bun || orderRequest) return;
-  };
-  const closeOrderModal = () => {};
 
   const price = useMemo(
     () =>
@@ -30,16 +31,26 @@ export const BurgerConstructor: FC = () => {
     [constructorItems]
   );
 
-  return null;
+  const onOrderClick = () => {
+    if (!isAuth) {
+      navigate('/login');
+      return;
+    }
+    if (!constructorItems.bun || orderRequest) return;
+    // диспатчим thunk — createOrder возьмёт данные из state.burger.constructor
+    dispatch(createOrder());
+  };
+
+  const handleCloseModal = () => dispatch(closeOrderModal());
 
   return (
     <BurgerConstructorUI
+      constructorItems={constructorItems}
       price={price}
       orderRequest={orderRequest}
-      constructorItems={constructorItems}
-      orderModalData={orderModalData}
+      orderModalData={orderModalData as TOrder | null}
       onOrderClick={onOrderClick}
-      closeOrderModal={closeOrderModal}
+      closeOrderModal={handleCloseModal}
     />
   );
 };

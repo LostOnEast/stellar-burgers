@@ -17,17 +17,20 @@ const constructorBurgerSlice = createSlice({
   initialState,
   reducers: {
     setBun(state, action: PayloadAction<TConstructorIngredient | null>) {
-      console.log(action.payload);
-      console.log('state');
-      console.log(state.items);
       state.bun = action.payload;
     },
-    addConstructorIngredient(
-      state,
-      action: PayloadAction<TConstructorIngredient>
-    ) {
-      state.items.push({ ...action.payload, id: uuidv4() });
-      //state.items.push(action.payload);
+    addConstructorIngredient: {
+      reducer(state, action: PayloadAction<TConstructorIngredient>) {
+        state.items.push(action.payload);
+      },
+      prepare(ingredient: TConstructorIngredient) {
+        return {
+          payload: {
+            ...ingredient,
+            id: uuidv4()
+          }
+        };
+      }
     },
     removeConstructorIngredient(state, action: PayloadAction<string>) {
       state.items = state.items.filter((i) => i.id !== action.payload);
@@ -54,4 +57,5 @@ export const {
   moveConstructorIngredient,
   clearConstructor
 } = constructorBurgerSlice.actions;
+
 export default constructorBurgerSlice.reducer;

@@ -19,22 +19,18 @@ export const BurgerIngredient: FC<TBurgerIngredientProps> = memo(
       `${base}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
 
     const handleAdd = () => {
-      console.log('BurgerIngredient');
-      console.log(ingredient);
       if (ingredient.type === 'bun') {
         const bun: TConstructorIngredient = {
           ...ingredient,
           id: ingredient._id
         };
         dispatch(setBun(bun));
-        //dispatch(setBun({ ...bun, id: uuidv4() }));
       } else {
         const con: TConstructorIngredient = {
           ...ingredient,
           id: makeUniqueId(ingredient._id)
         };
         dispatch(addConstructorIngredient(con));
-        //dispatch(addConstructorIngredient({ ...ingredient, id: uuidv4() }));
       }
     };
 
